@@ -10,13 +10,75 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '5rfvSt88DbpIN-gs_K_eLJU1xYabqdQi',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
+        ],
+        'response' => [
+            'class' => 'yii\web\Response',
+            /* @var $event Event */
+            'on beforeSend' => function ($event) {
+                /* @var $response \yii\web\Response */
+                $response = $event->sender;
+                // refer: https://github.com/yiisoft/yii2/blob/master/docs/guide/rest-error-handling.md
+                // @todo not cool, may be output a image
+                $format = $response->format;	// json/raw
+                $httpStatus = $response->getStatusCode();
+
+                switch ($format) {
+                    case 'json':
+                        if (!in_array($httpStatus, [401, 403,400])) {
+                            $response->setStatusCode(200);
+
+                        }
+                        break;
+                    case 'raw':
+                        break;
+                    default:
+                        Yii::error('unexpected response format', 'b');
+                }
+
+                // @todo 49999 special deal will update to constant
+                if ($httpStatus == 401 && isset($response->data['code']) && $response->data['code'] == 49999) {
+
+                    $domain = \Yii::$app->params['cookieDomain'];
+
+                    $expires = time() - 3600*2;
+                    $cookies = \Yii::$app->getResponse()->getCookies();
+
+                    $list = [
+                        [
+                            'name' => 'user_id',
+                            'value' => '',
+                        ],
+                        [
+                            'name' => 'access_token',
+                            'value' => '',
+                        ],
+                    ];
+
+                    foreach ($list as $item) {
+                        $cookies->add(new yii\web\Cookie([
+                            'name' 		=> $item['name'],
+                            'value' 	=> $item['value'],
+                            'expire' 	=> $expires,
+                            'domain' 	=> $domain,
+                            'path' 		=> '/',
+                            'httpOnly' 	=> false,
+                        ]));
+                    }
+                }
+            },
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            //'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
+            'loginUrl' => null,
+
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -38,14 +100,24 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'booking',
+                        'auth'
+
+                    ]
+                ],
             ],
         ],
-        */
     ],
     'params' => $params,
 ];

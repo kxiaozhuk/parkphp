@@ -2,14 +2,17 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
-{
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
+class User extends ActiveRecord implements IdentityInterface
+{
+
+    public static function tableName(){
+        return 'fat_user_info';
+    }
+
+/*
     private static $users = [
         '100' => [
             'id' => '100',
@@ -27,12 +30,13 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
         ],
     ];
 
-
+*/
     /**
      * @inheritdoc
      */
     public static function findIdentity($id)
     {
+        var_dump("id");die();
         return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
     }
 
@@ -41,6 +45,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        var_dump("token");die();
         foreach (self::$users as $user) {
             if ($user['accessToken'] === $token) {
                 return new static($user);
@@ -58,6 +63,9 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
+        var_dump("username");die();
+        return static::findOne(['usr_nm' => $username]);
+        /*
         foreach (self::$users as $user) {
             if (strcasecmp($user['username'], $username) === 0) {
                 return new static($user);
@@ -65,13 +73,16 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
         }
 
         return null;
+        */
     }
 
     /**
      * @inheritdoc
+     *
      */
     public function getId()
     {
+        var_dump("id");die();
         return $this->id;
     }
 
@@ -80,6 +91,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public function getAuthKey()
     {
+        var_dump('au');die();
         return $this->authKey;
     }
 
@@ -88,6 +100,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
+        var_dump("valid");die();
         return $this->authKey === $authKey;
     }
 
@@ -101,4 +114,17 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     {
         return $this->password === $password;
     }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                $this->auth_key = \Yii::$app->security->generateRandomString();
+            }
+            return true;
+        }
+        return false;
+    }
+
+
 }
