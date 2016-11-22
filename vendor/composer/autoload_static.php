@@ -18,12 +18,18 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
         'y' => 
         array (
             'yii\\swiftmailer\\' => 16,
+            'yii\\httpclient\\' => 15,
             'yii\\gii\\' => 8,
             'yii\\faker\\' => 10,
             'yii\\debug\\' => 10,
             'yii\\composer\\' => 13,
             'yii\\bootstrap\\' => 14,
+            'yii\\authclient\\' => 15,
             'yii\\' => 4,
+        ),
+        'f' => 
+        array (
+            'filsh\\yii2\\oauth2server\\' => 24,
         ),
         'c' => 
         array (
@@ -40,6 +46,10 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\BrowserKit\\' => 29,
+        ),
+        'R' => 
+        array (
+            'Respect\\Validation\\' => 19,
         ),
         'P' => 
         array (
@@ -71,6 +81,10 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-swiftmailer',
         ),
+        'yii\\httpclient\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yiisoft/yii2-httpclient',
+        ),
         'yii\\gii\\' => 
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-gii',
@@ -91,9 +105,17 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-bootstrap',
         ),
+        'yii\\authclient\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yiisoft/yii2-authclient',
+        ),
         'yii\\' => 
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
+        ),
+        'filsh\\yii2\\oauth2server\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/filsh/yii2-oauth2-server',
         ),
         'cebe\\markdown\\' => 
         array (
@@ -134,6 +156,10 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
         'Symfony\\Component\\BrowserKit\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/browser-kit',
+        ),
+        'Respect\\Validation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/respect/validation/library',
         ),
         'Psr\\Log\\' => 
         array (
@@ -182,6 +208,13 @@ class ComposerStaticInit79819d38c0d07401b77ae5f2f58666eb
             'Prophecy\\' => 
             array (
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
+            ),
+        ),
+        'O' => 
+        array (
+            'OAuth2' => 
+            array (
+                0 => __DIR__ . '/..' . '/bshaffer/oauth2-server-php/src',
             ),
         ),
         'H' => 
