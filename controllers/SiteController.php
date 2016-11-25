@@ -2,14 +2,12 @@
 
 namespace app\controllers;
 
-use app\base\BaseController;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\ContentNegotiator;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 use yii\web\Response;
 
 class SiteController extends Controller
@@ -29,7 +27,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['login'],
                         'allow' => true,
-                        'roles' => ['?'],
+                        'roles' => ['?','@'],
                     ],
                 ],
             ],
@@ -69,7 +67,14 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        $model->attributes = Yii::$app->request->post();
+
+
+        if ($model->validate() && $model->login()) {
+
+            //$this->   Yii::$app->getRequest()->getUserIP();
+            //$this->access_token =
+
             return [
                 'is_login' => true
             ];
@@ -89,6 +94,9 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
         return ['logout' => true];
+    }
+    public function actionError(){
+        return ['error' => 1];
     }
     public function afterAction($action, $result) {
 

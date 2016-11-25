@@ -11,6 +11,9 @@ namespace app\dao;
 
 use yii\db\ActiveRecord;
 
+/**
+ * @property String $usr_no
+ */
 class UserInfo extends ActiveRecord
 {
     public static function tableName(){

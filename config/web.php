@@ -6,6 +6,34 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'modules' => [
+        'oauth2' => [
+            'class' => 'filsh\yii2\oauth2server\Module',
+            'options' => [
+                'token_param_name' => 'access_token',
+                'access_lifetime' => 3600 * 24,
+
+                'require_exact_redirect_uri' => false
+            ],
+            'storageMap' => [
+                'user_credentials' => 'app\base\Ouser'
+            ],
+            'grantTypes' => [
+                'client_credentials' => [
+                    'class' => 'OAuth2\GrantType\ClientCredentials',
+                    'allow_public_clients' => false
+                ],
+                'user_credentials' => [
+                    'class' => 'OAuth2\GrantType\UserCredentials'
+                ],
+                'refresh_token' => [
+                    'class' => 'OAuth2\GrantType\RefreshToken',
+                    'always_issue_new_refresh_token' => true
+                ]
+            ],
+        ],
+    ],
+
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -22,12 +50,12 @@ $config = [
                 $response = $event->sender;
                 // refer: https://github.com/yiisoft/yii2/blob/master/docs/guide/rest-error-handling.md
                 // @todo not cool, may be output a image
-                $format = $response->format;	// json/raw
+                $format = $response->format;    // json/raw
                 $httpStatus = $response->getStatusCode();
 
                 switch ($format) {
                     case 'json':
-                        if (!in_array($httpStatus, [401, 403,400])) {
+                        if (!in_array($httpStatus, [401, 403, 400])) {
                             $response->setStatusCode(200);
 
                         }
@@ -43,7 +71,7 @@ $config = [
 
                     $domain = \Yii::$app->params['cookieDomain'];
 
-                    $expires = time() - 3600*2;
+                    $expires = time() - 3600 * 2;
                     $cookies = \Yii::$app->getResponse()->getCookies();
 
                     $list = [
@@ -59,12 +87,12 @@ $config = [
 
                     foreach ($list as $item) {
                         $cookies->add(new yii\web\Cookie([
-                            'name' 		=> $item['name'],
-                            'value' 	=> $item['value'],
-                            'expire' 	=> $expires,
-                            'domain' 	=> $domain,
-                            'path' 		=> '/',
-                            'httpOnly' 	=> false,
+                            'name' => $item['name'],
+                            'value' => $item['value'],
+                            'expire' => $expires,
+                            'domain' => $domain,
+                            'path' => '/',
+                            'httpOnly' => false,
                         ]));
                     }
                 }
@@ -73,8 +101,9 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\base\Ouser',
             //'enableAutoLogin' => true,
             'enableAutoLogin' => false,
             'loginUrl' => null,
@@ -105,14 +134,14 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+                'POST auth/login' => 'oauth2/default/token',
+                '<controller:\w+>/<id:\w+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
                         'booking',
-                        'auth'
 
                     ]
                 ],

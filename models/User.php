@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\dao\UserInfo;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -9,35 +10,16 @@ class User extends ActiveRecord implements IdentityInterface
 {
 
     public static function tableName(){
-        return 'fat_user_info';
+        return 'oauth_users';
     }
 
-/*
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-*/
     /**
      * @inheritdoc
      */
     public static function findIdentity($id)
     {
-        var_dump("id");die();
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+
+        return self::findOne(['user_id' => $id]);
     }
 
     /**
@@ -45,14 +27,9 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        var_dump("token");die();
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        $u = self::find()->one();
+        var_dump($u);die();
+        return self::find()->one();
     }
 
     /**
@@ -63,8 +40,19 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        var_dump("username");die();
+        return  static::findOne(['username' => $username]);
+        //return $userInfo = UserInfo::findOne(['user_name' => $username]);
+//        if(!empty($userInfo)){
+//            return User::findOne(['user_no' => $userInfo->usr_no]);
+//        }
+//        return null;
+        /*
+        if(!empty($userInfo)){
+            $user_no = $userInfo->usr_no;
+        }
+
         return static::findOne(['usr_nm' => $username]);
+        */
         /*
         foreach (self::$users as $user) {
             if (strcasecmp($user['username'], $username) === 0) {
@@ -82,8 +70,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        var_dump("id");die();
-        return $this->id;
+        return $this->getPrimaryKey();
+
     }
 
     /**
@@ -112,11 +100,14 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        //\Yii::$app->security->passwordHashCost($password)
+        //return $this->password === $password;
+        return $this->password == $password;
     }
 
     public function beforeSave($insert)
     {
+
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->auth_key = \Yii::$app->security->generateRandomString();
@@ -125,6 +116,5 @@ class User extends ActiveRecord implements IdentityInterface
         }
         return false;
     }
-
 
 }
